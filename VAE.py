@@ -45,17 +45,11 @@ class VAE_HDP(object):
         self._init_data(source, target)
 
         # parameter package
-        pack = []
         for kl in self.kl_range:
             for mmd in self.mmd_range:
                 for ent in self.ent_range:
-                    pack.append({'kl': kl, 'mmd': mmd, 'ent': ent})
-        if self.workers == -1:
-            self.workers = os.cpu_count()
-        vae_pool = multiprocessing.Pool(self.workers)
-        vae_pool.map(self._train, pack)
-        vae_pool.close()
-        vae_pool.join()
+                    self._train({'kl': kl, 'mmd': mmd, 'ent': ent})
+        print('{}=>{} finished!'.format(self.net_args.source_name, self.net_args.target_name))
 
     def _init_data(self, s, t):
         """

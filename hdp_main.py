@@ -13,6 +13,7 @@ from pre_proccessing import z_score_norm, log_trans
 from VAE import VAE_HDP
 import gc
 import argparse
+import multiprocessing
 
 # dataset_rest =['poi', 'redaktor', 'ant',  'tomcat', 'xerces', 'skarbonka', 'velocity', 'camel',  'xalan', 'arc']
 
@@ -24,7 +25,8 @@ datasets = {'NASA': ['CM1', 'MW1', 'PC1', 'PC3', 'PC4'], 'SOFTLAB': ['AR1', 'AR3
 def vae_main(args):
 
     # the company of the target project
-    for tar_cpy in ['NASA']:
+    vae_pool = multiprocessing.Pool(args.workers)
+    for tar_cpy in ['SOFTLAB']:
         target_dataset = datasets[tar_cpy]
         # if tar_cpy == 'NASA':
         #     continue
@@ -48,11 +50,13 @@ def vae_main(args):
                         print(curr_sou, '==>', curr_tar)
                         args.source_name = curr_sou
                         source_data = sio.loadmat('dataset/'+curr_sou)
-
                         model = VAE_HDP(args)
-                        model.fit(source_data, target_data)
+                        vae_pool.apply_async(model.fit, (source_data, target_data,))
+                        # model.fit(source_data, target_data)
                         del source_data, model
             del target_data
+    vae_pool.close()
+    vae_pool.join()
 
 
 if __name__ == '__main__':
@@ -66,7 +70,7 @@ if __name__ == '__main__':
     parser.add_argument('--score_path', type=str, metavar='PATH',
                         default='score/vae')
     parser.add_argument('--seed', default=1, type=int)
-    parser.add_argument('--workers', default=-1, type=int)
+    parser.add_argument('--workers', default=3, type=int)
     parser.add_argument('--print_freq', default=10, type=int)
     parser.add_argument('--source_name', type=str, default=None)
     parser.add_argument('--target_name', type=str, default=None)
