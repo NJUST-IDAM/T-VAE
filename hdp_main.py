@@ -25,8 +25,7 @@ datasets = {'NASA': ['CM1', 'MW1', 'PC1', 'PC3', 'PC4'], 'SOFTLAB': ['AR1', 'AR3
 def vae_main(args):
 
     # the company of the target project
-    vae_pool = multiprocessing.Pool(args.workers)
-    for tar_cpy in ['SOFTLAB']:
+    for tar_cpy in ['AEEEM']:
         target_dataset = datasets[tar_cpy]
         # if tar_cpy == 'NASA':
         #     continue
@@ -51,12 +50,10 @@ def vae_main(args):
                         args.source_name = curr_sou
                         source_data = sio.loadmat('dataset/'+curr_sou)
                         model = VAE_HDP(args)
-                        vae_pool.apply_async(model.fit, (source_data, target_data,))
+                        model.fit(source_data, target_data)
                         # model.fit(source_data, target_data)
                         del source_data, model
             del target_data
-    vae_pool.close()
-    vae_pool.join()
 
 
 if __name__ == '__main__':

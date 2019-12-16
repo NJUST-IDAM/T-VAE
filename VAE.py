@@ -45,10 +45,16 @@ class VAE_HDP(object):
         self._init_data(source, target)
 
         # parameter package
+        pool = multiprocessing.Pool(self.net_args.workers)
+        args_li = []
         for kl in self.kl_range:
             for mmd in self.mmd_range:
                 for ent in self.ent_range:
-                    self._train({'kl': kl, 'mmd': mmd, 'ent': ent})
+                    if not os.path.isfile(os.path.join(self.net_args.score_path, self.net_args.target_name, self.net_args.source_name, 'kl_{}-mmd_{}-ent_{}'.format(kl, mmd, ent))):
+                        args_li.append({'kl': kl, 'mmd': mmd, 'ent': ent})
+        pool.map(self._train, args_li)
+        pool.close()
+        pool.join()
         print('{}=>{} finished!'.format(self.net_args.source_name, self.net_args.target_name))
 
     def _init_data(self, s, t):
@@ -202,10 +208,10 @@ class VaeNet(keras.Model):
                 self.notebook.loc[epoch] = auc
                 if auc > best_score:
                     best_score = auc
-                    self.save_weights(os.path.join(self.model_path, self.formatter))
+                    # self.save_weights(os.path.join(self.model_path, self.formatter))
                 # if epoch % 200 == 0:
                 #     self.optimizer.learning_rate = self.optimizer.learning_rate * self.weight_decay
-        self.notebook.to_pickle(os.path.join(self.score_path, self.formatter))
+        # self.notebook.to_pickle(os.path.join(self.score_path, self.formatter))
 
     def _M(self, ns, nt):
         n = ns + nt
@@ -224,10 +230,10 @@ class VaeNet(keras.Model):
         sh.setLevel(logging.INFO)
         logger.addHandler(sh)
 
-        fh = logging.FileHandler(os.path.join(self.logs_path, self.formatter + '.log'))
-        fh.setFormatter(loggging_format)
-        fh.setLevel(logging.INFO)
-        logger.addHandler(fh)
+        # fh = logging.FileHandler(os.path.join(self.logs_path, self.formatter + '.log'))
+        # fh.setFormatter(loggging_format)
+        # fh.setLevel(logging.INFO)
+        # logger.addHandler(fh)
         return logger
 
     def _check_path(self):
