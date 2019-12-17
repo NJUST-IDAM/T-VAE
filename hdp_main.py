@@ -30,20 +30,20 @@ def vae_main(args):
         # if tar_cpy == 'NASA':
         #     continue
         # the target projects
-        for curr_tar in target_dataset:
+        for curr_tar in ['JDT']:
             # if curr_tar != 'Safe':
             #     continue
             # if curr_tar == 'Safe':
             #     first = False
             args.target_name = curr_tar
             target_data = sio.loadmat('dataset/' + curr_tar)
-            for sou_cpy in company:
+            for sou_cpy in ['NASA']:
                 if tar_cpy == sou_cpy:
                     continue
                 else:
                     source_dataset = datasets[sou_cpy]
                     # the source projects
-                    for curr_sou in source_dataset:
+                    for curr_sou in ['PC4']:
                         # if curr_sou != 'ML':
                         #     continue
                         print(curr_sou, '==>', curr_tar)
@@ -67,7 +67,7 @@ if __name__ == '__main__':
     parser.add_argument('--score_path', type=str, metavar='PATH',
                         default='score/vae')
     parser.add_argument('--seed', default=1, type=int)
-    parser.add_argument('--workers', default=3, type=int)
+    parser.add_argument('--workers', default=4, type=int)
     parser.add_argument('--print_freq', default=10, type=int)
     parser.add_argument('--source_name', type=str, default=None)
     parser.add_argument('--target_name', type=str, default=None)

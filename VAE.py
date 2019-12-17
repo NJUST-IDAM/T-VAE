@@ -208,10 +208,10 @@ class VaeNet(keras.Model):
                 self.notebook.loc[epoch] = auc
                 if auc > best_score:
                     best_score = auc
-                    # self.save_weights(os.path.join(self.model_path, self.formatter))
+                    self.save_weights(os.path.join(self.model_path, self.formatter))
                 # if epoch % 200 == 0:
                 #     self.optimizer.learning_rate = self.optimizer.learning_rate * self.weight_decay
-        # self.notebook.to_pickle(os.path.join(self.score_path, self.formatter))
+        self.notebook.to_pickle(os.path.join(self.score_path, self.formatter))
 
     def _M(self, ns, nt):
         n = ns + nt
@@ -230,10 +230,10 @@ class VaeNet(keras.Model):
         sh.setLevel(logging.INFO)
         logger.addHandler(sh)
 
-        # fh = logging.FileHandler(os.path.join(self.logs_path, self.formatter + '.log'))
-        # fh.setFormatter(loggging_format)
-        # fh.setLevel(logging.INFO)
-        # logger.addHandler(fh)
+        fh = logging.FileHandler(os.path.join(self.logs_path, self.formatter + '.log'))
+        fh.setFormatter(loggging_format)
+        fh.setLevel(logging.INFO)
+        logger.addHandler(fh)
         return logger
 
     def _check_path(self):
