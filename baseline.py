@@ -25,7 +25,7 @@ class ClassifyNet():
         index = np.array([False] * len(y))
         index[random.sample(range(len(y)), int(len(y)*0.8))] = True
         y = np.repeat([y], self.n_out, axis=0).T
-        history = self.model.fit(x[index], y[index], epochs=1000, validation_data=(x[~index], y[~index]), verbose=0)
+        history = self.model.fit(x, y, epochs=1000, verbose=0)
         # print(history)
 
     def predict(self, x):
