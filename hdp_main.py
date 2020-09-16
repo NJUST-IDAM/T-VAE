@@ -7,9 +7,6 @@ Perform the heterogeneous defect prediction to vertify the proposed method.
 """
 
 import scipy.io as sio
-import numpy as np
-import pandas as pd
-from pre_proccessing import z_score_norm, log_trans
 from VAE import VAE_HDP
 import gc
 import argparse
@@ -25,33 +22,28 @@ datasets = {'NASA': ['CM1', 'MW1', 'PC1', 'PC3', 'PC4'], 'SOFTLAB': ['AR1', 'AR3
 def vae_main(args):
 
     # the company of the target project
-    for tar_cpy in ['AEEEM']:
+    for tar_cpy in company:
         target_dataset = datasets[tar_cpy]
-        # if tar_cpy == 'NASA':
-        #     continue
+
         # the target projects
-        for curr_tar in ['JDT']:
-            # if curr_tar != 'Safe':
-            #     continue
-            # if curr_tar == 'Safe':
-            #     first = False
+        for curr_tar in target_dataset:
+
             args.target_name = curr_tar
             target_data = sio.loadmat('dataset/' + curr_tar)
-            for sou_cpy in ['NASA']:
+            for sou_cpy in company:
                 if tar_cpy == sou_cpy:
                     continue
                 else:
                     source_dataset = datasets[sou_cpy]
                     # the source projects
-                    for curr_sou in ['PC4']:
-                        # if curr_sou != 'ML':
-                        #     continue
+                    for curr_sou in source_dataset:
+
                         print(curr_sou, '==>', curr_tar)
                         args.source_name = curr_sou
                         source_data = sio.loadmat('dataset/'+curr_sou)
                         model = VAE_HDP(args)
                         model.fit(source_data, target_data)
-                        # model.fit(source_data, target_data)
+
                         del source_data, model
             del target_data
 

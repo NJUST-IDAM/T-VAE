@@ -17,6 +17,8 @@ import tensorflow as tf
 import numpy as np
 import pandas as pd
 import tensorflow_probability as tfp
+from parameter import parameter
+
 import multiprocessing
 import logging
 import time
@@ -41,7 +43,7 @@ class VAE_HDP(object):
         self.mmd_range = [1e-2, 1e-1, 1e0, 1e+1, 1e+2]
         self.ent_range = [1e-2, 1e-1, 1e0, 1e+1, 1e+2]
 
-    def fit(self, source, target):
+    def search_fit(self, source, target):
         self._init_data(source, target)
 
         # parameter package
@@ -51,11 +53,19 @@ class VAE_HDP(object):
             for mmd in self.mmd_range:
                 for ent in self.ent_range:
                     if not os.path.isfile(os.path.join(self.net_args.score_path, self.net_args.target_name, self.net_args.source_name, 'kl_{}-mmd_{}-ent_{}'.format(kl, mmd, ent))):
-                        args_li.append({'kl': kl, 'mmd': mmd, 'ent': ent})
+                        args_li.append({'kl': kl, 'mmd': mmd, 'entropy': ent})
         pool.map(self._train, args_li)
         pool.close()
         pool.join()
         print('{}=>{} finished!'.format(self.net_args.source_name, self.net_args.target_name))
+
+    def fit(self, source, target):
+        self._init_data(source, target)
+        if target in parameter and source in parameter[target]:
+            self._train(parameter[target][source])
+        else:
+            default = {'kl': 1.0, 'mmd': 1.0, 'entropy': 1.0}
+            self._train(default)
 
     def _init_data(self, s, t):
         """
@@ -83,10 +93,10 @@ class VAE_HDP(object):
     def _train(self, para):
         self.net_args.lambda_kl = para['kl']
         self.net_args.lambda_mmd = para['mmd']
-        self.net_args.lambda_ent = para['ent']
+        self.net_args.lambda_ent = para['entropy']
         net = VaeNet(self.net_args, pd.Series())
         net.fit(self.Sx, self.Tx, self.Sy, self.Ty)
-        print('kl:{} \tmmd:{} \tent:{} finished'.format(para['kl'], para['mmd'], para['ent']))
+        print('kl:{} \tmmd:{} \tent:{} finished'.format(para['kl'], para['mmd'], para['entropy']))
 
     def auc_score(self, target_Y):
         """
@@ -144,7 +154,7 @@ class VaeNet(keras.Model):
         self.logger = self._logger()
 
     def loss(self, sx, tx, sy, ty):
-
+        """ ty only used for logging"""
         inputs = tf.concat((sx, tx), axis=0)
         lat_feature = self.inference_network(inputs)
 

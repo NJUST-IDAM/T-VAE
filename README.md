@@ -1,36 +1,22 @@
-# hdp_run
+##  T-VAE： 一种基于变分自编码器的异构缺陷预测特征表示方法
 
-#### Description
-{**When you're done, you can delete the content in this README and update the file with details for others getting started with your repository**}
+#### 运行环境
 
-#### Software Architecture
-Software architecture description
+```
+python 3.7
+tensorflow 2.0
+numpy
+scipy
+sklearn
+pandas
+```
 
-#### Installation
+#### 运行方法
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+在控制台中运行`hdp_main.py`
+```bash
+$ python hdp_main.py
+```
 
-#### Instructions
+指标结果会输出到`score`文件夹下。
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### Contribution
-
-1.  Fork the repository
-2.  Create Feat_xxx branch
-3.  Commit your code
-4.  Create Pull Request
-
-
-#### Gitee Feature
-
-1.  You can use Readme\_XXX.md to support different languages, such as Readme\_en.md, Readme\_zh.md
-2.  Gitee blog [blog.gitee.com](https://blog.gitee.com)
-3.  Explore open source project [https://gitee.com/explore](https://gitee.com/explore)
-4.  The most valuable open source project [GVP](https://gitee.com/gvp)
-5.  The manual of Gitee [https://gitee.com/help](https://gitee.com/help)
-6.  The most popular members  [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
